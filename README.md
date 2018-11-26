@@ -7,7 +7,7 @@ Process Spawn Control suspends newly launched processes and gives the analyst th
 
 By using this tool, an analyst can slow down the execution chain and let a malware dropper drop the payload without giving it the ability to execute it. Additionally, this tool can be used to help in the analysis of malware which injects itself into a newly spawned process.  
 
-![Process Spawn Control](media/process_spawn_control.png?raw=true)
+![Process Spawn Control](media/process_spawn_control.jpg?raw=true)
 
 ### Technical details
 Process Spawn Control (PsC) uses _Windows Management Instrumentation (WMI)_ to asynchronously get events about newly started processes. If the processes is not configured 
