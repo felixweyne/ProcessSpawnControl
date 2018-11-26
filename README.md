@@ -10,7 +10,7 @@ By using this tool, an analyst can slow down the execution chain and let a malwa
 ![Process Spawn Control](media/process_spawn_control.jpg?raw=true)
 
 ### Technical details
-Process Spawn Control (PsC) uses _Windows Management Instrumentation (WMI)_ to asynchronously get events about newly started processes. If the processes is not configured 
+Process Spawn Control (PsC) uses _Windows Management Instrumentation (WMI)_ to asynchronously get events about newly started processes. If the process is not configured 
 to be ignored, PsC will try to suspend the process by calling the Windows _NtSuspendProcess API_. If the suspension succeeds, a GUI popup is shown to the user. For each
 new process, the process' commandline and parent process is shown.  
 
