@@ -40,7 +40,7 @@ Suspending the process freezes its execution and prevents it from terminating qu
 
 Below is an example of a packed instance of the Azorult information stealer. The packer injects Azorult into _vbc.exe_. Azorults execution starts by connecting to a command-and-control server to fetch instructions (this behavior is documented really well in 
 [Palo Altos blog on Azorult](https://researchcenter.paloaltonetworks.com/2018/11/unit42-new-wine-old-bottle-new-azorult-variant-found-findmyname-campaign-using-fallout-exploit-kit/)). If the connection to the C2 is unsuccessful, Azorult terminates quickly.
-In the case of an unsuccessful C2 connection, the execution happens so fast that one doesn't have the time to manuallty dump the _vbc.exe_ process to disk. By using Process Spawn Control, an analyst can suspend the execution of _vbc.exe_, allowing him to take his time to interact with it.
+In the case of an unsuccessful C2 connection, the execution happens so fast that one doesn't have the time to manually dump the _vbc.exe_ process to disk. By using Process Spawn Control, an analyst can suspend the execution of _vbc.exe_, allowing him to take his time to interact with it.
 
 Sample SHA1: fb339b3457568f02b176608e96005b102015edd7     
 Full video available [available here](media/process_spawn_control_azorult.mp4?raw=true).  
