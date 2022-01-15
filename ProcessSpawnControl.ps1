@@ -21,9 +21,9 @@
 #Settings
 $popupWidth=420; #Width of the GUI popup.
 $popupScreenBorderDistance=20; 
-$ignoredProcesses=@("dllhost.exe","SearchProtocolHost.exe","SearchFilterHost.exe","taskhost.exe", "conhost.exe"); #these processes will never be suspended
-$new_process_check_interval = New-Object System.TimeSpan(0,0,0,0,750); #public TimeSpan (int days, int hours, int minutes, int seconds, int milliseconds);
-
+$ignoredProcesses=@("dllhost.exe","SearchProtocolHost.exe","SearchFilterHost.exe","taskhost.exe","conhost.exe","backgroundTaskHost.exe","explorer.exe"); #these processes will never be suspended
+$new_process_check_interval = New-Object System.TimeSpan(0,0,0,0,250); #public TimeSpan (int days, int hours, int minutes, int seconds, int milliseconds);
+$suspend_parent_process=$false;
 
 #
 # 1. Functionality to suspend and resume processes
@@ -93,7 +93,7 @@ function Resume-Process($processID) {
 #
 # 2. Functionality to create user interface popup dialog
 #
-function GenerateForm($processName,$processID,$parentProcessName) {
+function GenerateForm($processName,$processID,$parentOrChildProcessName,$isSuspendedParentProcess) {
 	[reflection.assembly]::loadwithpartialname("System.Windows.Forms") | Out-Null;
 	[reflection.assembly]::loadwithpartialname("System.Drawing") | Out-Null;
 
@@ -167,7 +167,10 @@ function GenerateForm($processName,$processID,$parentProcessName) {
 	$labelProcessID.Location = $labelProcessID_drawingPoint;
 
 	#label parent process name 
-	$labelParentProcessID.Text = "Parent Process: $parentProcessName"
+	$labelParentProcessID.Text = "Parent Process: $parentOrChildProcessName"
+	if ($isSuspendedParentProcess){
+		$labelParentProcessID.Text = "Child Process: $parentOrChildProcessName"
+	}
 	$labelParentProcessID.AutoSize = $True
 	$labelParentProcessID.Font = New-Object System.Drawing.Font("Lucida Console",9,[System.Drawing.FontStyle]::Regular);
 	$labelParentProcessID.ForeColor = 'white';
@@ -306,7 +309,19 @@ do
 	{
 		if(Suspend-Process -processID $e.ProcessId){
 			Write-Host "Process is suspended. Creating GUI popup.";
-			GenerateForm -processName $processName -processID $e.ProcessId -parentProcessName $parent_process;
+			if($suspend_parent_process -And ($parent_process -ne "unknown")){
+				$parent_process=$parent_process+".exe";
+				if(-not ($ignoredProcesses -match $parent_process)){
+					write-host ">>Suspending parent of "$processName" : "$parent_process
+					if(Suspend-Process -processID $e.ParentProcessID){
+						Write-Host ">>Suspended parent process. Creating GUI popup.";
+						GenerateForm -processName $parent_process -processID $e.ParentProcessID -parentOrChildProcessName $processName -isSuspendedParentProcess $true;
+					}
+				}else{
+					Write-Host "Would have suspended parent process: "$parent_process". But process is present in ignorelist.";
+				}
+			}
+			GenerateForm -processName $processName -processID $e.ProcessId -parentOrChildProcessName $parent_process -isSuspendedParentProcess $false;
 		}
 	}else{
 		Write-Host "Process ignored as per configuration.";
